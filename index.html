@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groves Royals</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fleur+De+Leah&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/public/favicon.ico">
+    <style>
+        /* Root variables */
+        :root {
+            --primary-color: #1a4d1a;
+            --accent-color: #32CD32;
+        }
+
+        /* Base styles */
+        body {
+            background-image: url(/public/Background_rainforest.jpeg);
+            background-attachment: fixed;
+            color: white;
+        }
+
+        /* Navigation */
+        .nav-glass {
+            background: rgba(37, 59, 2, 0.8);
+            backdrop-filter: blur(3px);
+            border-bottom: 2px solid rgba(31, 27, 27, 0.1);
+        }
+        .brand-title {
+            font-family: 'Fleur De Leah', 'regular'; 
+            letter-spacing: 2px;
+            font-size: 3rem; /* Adjusted size */
+            text-shadow: 0 0 50px rgba(4, 10, 4, 0.747);
+        }
+
+        /* Optional hover effect */
+        .brand-title:hover {
+            text-shadow: 0 0 15px rgba(106, 236, 30, 0.973);
+            transition: text-shadow 0.3s ease;
+        }
+        .mobile-menu {
+            display: none;
+            transform: translateY(-100%);
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .mobile-menu.active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+        }
+        .video-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 0;
+            mix-blend-mode: screen;
+            filter: hue-rotate(250deg) contrast(1.6) brightness(1.4);
+            opacity: 0.9;
+            transition: opacity 1s ease;
+        }
+
+        /* Hero section */
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.0)), url('/api/placeholder/1500/800');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .video-hero {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .video-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            z-index: 0;
+            mix-blend-mode: plus-lighter;
+            opacity: 0.6;
+            transition: opacity 1s ease;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                circle at center,
+                rgba(26, 77, 26, 0.1) 0%,
+                rgba(10, 46, 10, 0.3) 100%
+            );
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            mix-blend-mode: screen;
+            color: white;
+            padding: 0 20px;
+        }
+
+        /* Carousel styles */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding: 0 40px;
+        }
+                /* Viewport to show exactly 3 cards */
+        .carousel-viewport {
+            width: 100%;
+            overflow: hidden;
+            padding: 0px; /* Space for arrows */
+        }
+       .carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 2rem;
+        }
+        .carousel.no-transition {
+            transition: none;
+        }
+
+        .carousel-item {
+            flex: 0 0 calc((100% - 4rem) / 3);
+            min-width: calc((100% - 4rem) / 3);
+            transition: all 0.3s ease;
+        }
+
+        .carousel-item.zoomed {
+            position: cover;
+            top: 50%;
+            left: 50%;
+            transform: translate(0%, 0%) scale(1.6);
+            z-index: 1000;
+            min-width: auto;
+            width: 180vw;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        @media (min-width: 1024px) {
+            /* Desktop: 3 items */
+            .carousel-item {
+                width: calc((100% - 2rem) / 3);
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            /* Tablet: 2 items */
+            .carousel-item {
+                width: calc((100% - 1rem) / 2);
+            }
+        }
+
+        @media (max-width: 767px) {
+            /* Mobile: 1 item */
+            .carousel-item {
+                width: 100%;
+            }
+            .carousel-container {
+                padding: 0 20px;
+            }
+        }
+
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(50, 205, 50, 0.2);
+            border: 1px solid rgba(50, 205, 50, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .carousel-arrow:hover {
+            background: rgba(50, 205, 50, 0.8);
+        }
+
+        .carousel-arrow.prev { left: 0; }
+        .carousel-arrow.next { right: 0; }
+
+        @media (max-width: 640px) {
+            .carousel-arrow {
+                width: 30px;
+                height: 30px;
+            }
+        }
+        /* Snake card styles */
+        .snake-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .snake-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.0);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Gallery */
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        .species-tag {
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .species-tag {
+            transform: translateY(0);
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .text-shadow-sm {
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .text-shadow-lg {
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .text-shadow-white {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .bg-shadow-glow {
+            text-shadow: 0 0 10px rgba(50, 205, 50, 0.5),
+                        0 0 20px rgba(50, 205, 50, 0.3);
+        }
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .fade-out{
+            opacity: 0;
+            transform: translateY(-50%);
+        }
+
+        /* Staggered animation delays */
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+        .delay-4 { transition-delay: 0.4s; }
+
+        /* Special section animations */
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-glass fixed w-full top-0 z-50 px-4 py-3">
+        <div class="container mx-auto flex justify-between items-center">
+                <!-- Logo/Title -->
+                <h1 class="brand-title">
+                    Groves Royals
+                </h1>
+    
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-6">
+                    <a href="#snakes" 
+                        class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                              hover:bg-green-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/20 
+                              hover:border-green-400 hover:text-shadow-white hover:scale-105
+                              transition-all duration-300 ease-out animated-on-scroll">
+                        Poikaset
+                    </a>
+                    <a href="#species" 
+                        class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                            hover:bg-green-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/20 
+                            hover:border-green-400 hover:text-shadow-white hover:scale-105
+                            transition-all duration-300 ease-out animated-on-scroll">
+                        Esittely
+                    </a>
+                    <a href="#news" 
+                        class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                            hover:bg-green-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/20 
+                            hover:border-green-400 hover:text-shadow-white hover:scale-105
+                            transition-all duration-300 ease-out animated-on-scroll">
+                        Uutta
+                    <a href="#about" 
+                        class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                            hover:bg-green-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/20 
+                            hover:border-green-400 hover:text-shadow-white hover:scale-105
+                            transition-all duration-300 ease-out animated-on-scroll">
+                        Meistä
+                    </a>
+                    <a href="#rules" 
+                        class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                        hover:bg-green-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/20 
+                        hover:border-green-400 hover:text-shadow-white hover:scale-105
+                        transition-all duration-300 ease-out animated-on-scroll">
+                        Myyntiehdot
+                    </a>
+                    <a href="#gallery" 
+                        class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                        hover:bg-green-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/20 
+                        hover:border-green-400 hover:text-shadow-white hover:scale-105
+                        transition-all duration-300 ease-out animated-on-scroll">
+                        Lajimme
+                    </a>
+                    <!-- Add other desktop navigation buttons here -->
+                </div>
+    
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden text-white focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="menuIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+    
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden mt-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="#snakes" class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                                          hover:bg-green-500/30 text-center transition-all duration-300 animated-on-scroll">
+                        Poikaset
+                    </a>
+                    <a href="#species" class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                                           hover:bg-green-500/30 text-center transition-all duration-300 animated-on-scroll">
+                        Lajiesittely
+                    </a>
+                    <a href="#news" class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                                           hover:bg-green-500/30 text-center transition-all duration-300 animated-on-scroll">
+                        Uutta
+                    </a>
+                    <a href="#about" class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                                         hover:bg-green-500/30 text-center transition-all duration-300 animated-on-scroll">
+                        Meistä
+                    </a>
+                    <a href="#rules" class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                                         hover:bg-green-500/30 text-center transition-all duration-300 animated-on-scroll">
+                        Myyntiehdot
+                    </a>
+                    <a href="#gallery" class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
+                                          hover:bg-green-500/30 text-center transition-all duration-300 animated-on-scroll">
+                        Galleria
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="video-hero">
+        <video class="video-background" autoplay muted playsinline>
+            <source src="/public/background-video.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay animated-on-scroll"></div>
+        </div>
+    </header>
+
+    <!-- Snake Collection Section with Carousel -->
+    <section id="snakes" class="py-24 animate-on-scroll">
+        <div class="relative max-w-7xl mx-auto px-4">
+            <div class="carousel-container overflow-hidden">
+                <div class="carousel" id="snakeCarousel">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+            <button class="carousel-arrow prev absolute left-0 top-1/2 -translate-y-1/2">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-arrow next absolute right-0 top-1/2 -translate-y-1/2">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Species Introduction Section -->
+<section id="species" class="py-24 px-4 animate-on-scroll">
+    <div class="container mx-auto">
+        <h2 class="text-4xl text-center text-shadow-white mb-16">Lajiesittelyt</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Species Categories -->
+            <div class="bg-black bg-opacity-70 p-8 rounded-xl backdrop-blur-sm">
+                <h3 class="text-2xl font-bold mb-4 text-green-300">Kuningaspyton (Python regius)</h3>
+                <ul class="space-y-4 text-gray-200">
+                    <li class="flex items-start animate-on-scroll delay-1">
+                        <span class="text-yellow-400 mr-2">•</span>
+                        <div>
+                            <p class="font-semibold">Kuningaspyton on hidastempoinen ja tarkkaileva lemmikkikäärme, joka viihtyy omassa piilopaikassaan josta voi havainnoida ympäristöään. Sen hoidon peruskulmakiviä ovat:</p>
+                            <p class="text-m"></p>
+                            <ul class="mt-2 space-y-2">
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">puhdasta juomavettä päivittäin tarpeeksi isossa astiassa jonne käärme mahtuu tarpeen mukaan myös pulahtamaan</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">terraarion kosteutus sumutuspullolla, kosteus ja oikea lämpötila ovat kunkulle tärkeitä</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">monipuolinen terraario, jossa runsaasti piilopaikkoja ja tutkittavaa, pienemmillä yksilöillä myös kiipeilypaikkoja</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">lämmittelypaikka on tärkeä, ja se on hyvä sijoittaa esimerkiksi jonkin piilopaikan alle</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">päiväsaikaan terraario on valaistu, yöllä pimeä</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">Kuningaspyton on harkitseva rutiininomainen ruokailija. Pidä ateriarytmi säännöllisenä ja toista toimenpiteet aina samanlaisina, jolloin käärme tietää mitä on tulossa. </p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">Pyton on raskasrakenteinen, tarkkaileva ja hidasliikkeinen lemmikkikäärme, joka seuraa tarkasti ympäristönsä tapahtumia. Se on helposti käsiteltävä ja hoidettava, kun käärmeen kanssa malttaa viettää aikaa ja toistaa hoitotoimenpiteitä usein. Käärme pitää lämmöstä ja rauhallisuudesta.</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">Täysikasvuinen Kuningaspyton kasvaa noin 100-150cm pituiseksi ja noin 1-3kg kokoiseksi, elinikä yleensä noin 20-30 vuotta</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-black bg-opacity-70 p-8 rounded-xl backdrop-blur-sm">
+                <h3 class="text-2xl font-bold mb-4 text-green-300">Viljakäärme (Pantherophis guttatus)</h3>
+                <ul class="space-y-4 text-gray-200">
+                    <li class="flex items-start animate-on-scroll delay-1">
+                        <span class="text-yellow-400 mr-2">•</span>
+                        <div>
+                            <p class="font-semibold">Viljakäärme on helppohoitoinen käärmelaji, jonka hoidon peruskulmakiviä ovat:</p>
+                            <p class="text-m"></p>
+                            <ul class="mt-2 space-y-2">
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">puhdasta juomavettä päivittäin, myös kostea sammaleinen piilopaikka on hyvä olla</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">monipuolinen terraario, jossa kaivautumiseen sopivaa pohjamateriaalia, sekä runsaasti piilo- ja kiipeilypaikkoja, lämmittelypaikka (lämpölevy esim. piilopaikan alla)</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">päiväsaikaan terraario on valaistu, yöllä pimeä</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">Viljakäärme on helppo ruokailija, sillä se syö aina mielellään. Viljiksen kanssa kannattaa olla tarkka ettei syötä sitä liikaa, sillä viljiksen vatsan on lähes pohjaton! </p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">Viljakäärme on sutjakka aktiivinen puuhailija, jonka touhuja on hauska seurata. Viljiksen käsittelyä kannattaa harjoittaa eläimen kanssa usein, sillä käärme on varsin nopealiikkeinen, ja tottumaton käärme yrittää aina ensin karata omistajansa käsistä pois. Varmoin ottein käsittely rauhoittaa käärmeen ja sitä on helpompi pidellä. Mitä iäkkäämpi käärme, sitä rauhallisempi se on totuttuaan käsittelyyn ja hoitotoimenpiteisiin</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-yellow-400 mr-2">•</span>
+                                    <p class="text-m">Täysikasvuinen viljakäärme kasvaa noin 80-150cm pituiseksi ja noin 800-1100g kokoiseksi, elinikä yleensä noin 10-20 vuotta</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+        <!-- Coming Section -->
+        <section id="news" class="py-24 px-4 animate-on-scroll" style="background: rgba(0, 12, 0, 0.7)">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-16">Tulossa vielä vuonna 2024</h2>
+                <p class="max-w-2xl mx-auto text-lg leading-relaxed">
+                    Vuoden kolmos poikue Blackpastel Mojave x Blackhead Lesser joulukuu/tammikuun aikana luovutus kunnossa.
+                    <br></br>
+                    Poikaset:
+                    <br></br>
+                    Blackpastel
+                    <br></br>
+                    Mojave x 2
+                    <br></br>
+                    Normal
+                </p>
+                <h2 class="text-4xl font-bold mb-16">Omistamisen kannalta hyödyllisiä linkkejä:</h2>
+                <a href="https://www.reptilemaniacs.com/" class="text-green-400 hover:text-green-300 underline transition-colors duration-300">Meidän laadukkaat ruuat ja tarvikkeet tulevat @ Reptile Maniacs:</a>
+                <br></br>
+                <a href="https://www.herppi.fi/" class="text-green-400 hover:text-green-300 underline transition-colors duration-300">Lajitietoutta ja laaja suomalainen yhteisö @ Herppi.fi:</a>
+                <br></br>
+                <a href="https://www.herpetomania.fi/" class="text-green-400 hover:text-green-300 underline transition-colors duration-300">Lajitietoutta ja laaja yhteisö Suomen herpetologinen yhdistys:</a>    
+            </div>
+        </section>
+        <br></br>
+        <br></br>
+    <!-- About Section -->
+    <section id="about" class="py-24 px-4 animate-on-scroll" style="background: rgba(0, 12, 0, 0.7)">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-16">Tarinaa meistä</h2>
+            <p class="max-w-2xl mx-auto text-lg leading-relaxed">
+                Kaksi matelijoista innostunutta 80-luvun tuotosta. Kiinnostus eläimiin , ötököihin ja muihin maan päällä liikkuviin otuksiin kumpuaa jo lapsuudesta. 
+                Toisemme löydettyämme ja päämme yhteen lyötyämme innostuimme näin aikuisiällä matelijoista ja hämähäkeistä. 
+                Lasten innostuttua lisäsimme kategoriaan ötökät, koska pitihän lapsillekin saada samaan sarjaan kuuluvaa harrastettavaa. Nyt eläinkatras on varovalta arvioltaan noin 50 yksilön kokoinen. 
+                Tarkkoja laskentoja ei ole tehty tai tehdäkään. Vuonna 2022 innostuimme ajatuksesta kasvatuksen suhteen; näin Groves Royals sai alkunsa ja ensimmäiset munat kuoriutuivat kesällä 2023 kolmen 
+                oman poikueen voimin. Tavoitteenamme on kasvattaa laadukkaita kotimaisia matelijalemmikkejä, jotka ovat luonteeltaan ja genetiikaltaan sopivia lemmikkeiksi ympäri Suomea. 
+                Käärmeiden kasvatusta avioparitiimillä vuodesta 2022.
+            </p>
+            <br></br>
+            <h2 class="text-4xl font-bold mb-16">Toni & Tiia @ Groves Royals</h2>
+        </div>
+    </section>
+    <!-- Sale Rules Section -->
+<section id="rules" class="py-24 px-4 animate-on-scroll">
+    <div class="container mx-auto">
+        <h2 class="text-4xl text-center font-bold mb-16 text-shadow-white">Myyntiehdot, toimitus ja maksaminen</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Purchase Requirements -->
+            <div class="bg-black bg-opacity-70 p-8 rounded-xl backdrop-blur-sm">
+                <div class="text-white-300 text-4xl mb-4">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-yellow-300">Myyntiehdot</h3>
+                <ul class="space-y-3 text-gray-200">
+                    <li>• Olet yli 18-vuotias tai sinulla on huoltaja mukana kaupoilla.</li>
+                    <li>• Tunnet tai olet tutustunut lajiin etukäteen.</li>
+                    <li>• Sinulla on tarvittavat välineet jo valmiina tai olet hankkimassa ne lähiaikoina luovutuksesta.</li>
+                    <li>• Kasvattajalla on oikeus kieltäytyä myynnistä jos edelliset kohdat eivät täyty kasvattajan laatuvaatimustan tavalla.</li>
+                </ul>
+            </div>
+
+            <!-- Payment & Shipping -->
+            <div class="bg-black bg-opacity-70 p-8 rounded-xl backdrop-blur-sm">
+                <div class="text-blue-400 text-4xl mb-4">
+                    <i class="fa-regular fa-handshake"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-yellow-300">Toimitusehdot ja maksuehdot</h3>
+                <ul class="space-y-3 text-gray-200">
+                    <li>• Lähtökohtaiseti ostaja noutaa käärmeen.</li>
+                    <li>• Toimitus myös mahdollinen omien menojen mahdollistaessa sen.</li>
+                    <li>• Käärme on aina kokonaan maksettu kun se luovutetaan </li>
+                    <li>• Käärmeistä saattaa joutua maksamaan varaus maksun, jotta saat juuri haluamasi poikasen</li>
+                    <li>• Varaus summa saattaa vaihdella riippuen poikasesta. Yleensä noin 20% poikasen hinnasta. Varausmaksua ei palauteta jos ostaja peruu sovitun kaupan.</li>
+                </ul>
+            </div>
+
+            <!-- Health Guarantee -->
+            <div class="bg-black bg-opacity-70 p-8 rounded-xl backdrop-blur-sm">
+                <div class="text-red-500 text-4xl mb-4">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-yellow-300">Terveys</h3>
+                <ul class="space-y-3 text-gray-200">
+                    <li>• Käärme luovutetaan aina vain terveänä.</li>
+                    <li>• Ilmoita kasvattajalle aina kahden päivän sisällä luovutuksesta, jos huomaat puutteen tai ongelman käärmeessä.</li>
+                    <li>• Poikanen on aina ruokittu viikon sisään luovutuksesta ja nahanluonti on ollut ongelmatonta.</li>
+                    <li>• Käärmeellä on aina tarvittavat määräysten vaatimat paperit mukana.</li>
+                    <li>• Autamme tarvittaessa mahdollisuuksien mukaan ongelma tilanteissa.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="container mx-auto py-24 px-4 animate-on-scroll">
+        <div class="bg-black bg-opacity-70 p-8 rounded-xl backdrop-blur-sm">
+        <h2 class="text-4xl text-center font-bold mb-16 text-shadow-white">Omat harrastelajimme <i class="fas fa-camera text-red-600 text"></i></h2>
+        <div class="text-red-500 text-4xl mb-4">
+        <div id="photoGallery" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        </div>
+    </section>
+    <!-- Overlay for zoomed cards -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Footer -->
+    <footer class="nav-glass py-12">
+        <div class="container mx-auto text-center">
+            <div class="flex justify-center space-x-8 mb-6">
+                <a href="https://www.facebook.com/profile.php?id=61553713040693" class="hover:text-green-300 transition text-3xl"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com/grovesroyals?igsh=Mjd2eTd0c3NrbmJu" class="hover:text-green-300 transition text-3xl"><i class="fab fa-instagram"></i></a>
+                <a href="mailto:grovesroyals@gmail.com" class="hover:text-green-300 transition text-3xl"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p class="text-gray-300">&copy; 2022-2024 Groves Royals.<span class="text-2xl align-super ml-1">®</span> All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const observerOptions = {
+            root: null,
+            rootMargin: '-50px',
+            threshold: [0, 0.1, 0.9, 1]
+        };
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // Calculate scroll direction and visibility percentage
+                const boundingRect = entry.boundingClientRect;
+                const scrollingDown = boundingRect.top < 0;
+                const visibleRatio = entry.intersectionRatio;
+
+                if (entry.isIntersecting) {
+                    // Fade in when element comes into view
+                    if (visibleRatio > 0.1) {
+                        entry.target.classList.add('fade-in');
+                        entry.target.classList.remove('fade-out');
+                    }
+                } else {
+                    // Fade out when element leaves viewport
+                    if (scrollingDown && boundingRect.top < -100) {
+                        entry.target.classList.add('fade-out');
+                        entry.target.classList.remove('fade-in');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with animation classes
+        document.querySelectorAll('.animate-on-scroll').forEach((element) => {
+            scrollObserver.observe(element);
+        });
+    });
+
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // Hide mobile menu when clicking a link
+    document.querySelectorAll('#mobileMenu a').forEach(link => {
+        link.addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.add('hidden');
+        });
+    });
+
+    // Hide mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            
+        if (!mobileMenuBtn.contains(event.target) && !mobileMenu.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+        }
+    });
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoHero = document.querySelector('.video-hero');
+
+    // Video ended event
+        const video = document.querySelector('.video-background');
+            video.addEventListener('timeupdate', function() {
+                // Pause 0.1 seconds before the end to ensure the last frame is shown
+                if (video.currentTime >= video.duration - 0.1) {
+                video.pause();
+        }});
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Snake data
+        const snakes = [
+            { 
+                name: 'Blackhead CB23', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/Coming-soon.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Banana CB24', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/Bananay24c1b2001.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Blackhead CB23',
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/Coming-soon.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Pinstripe CB24', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/pinstripe.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Yellowbelly CB24', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/yellowbelly.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Blackhead CB23', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/Coming-soon.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Special CB24', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/Specialy24c1b4002.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Special CB24', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/Specialy24c1b5002.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Normal CB24', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/Normaly24c1b7003.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Normal CB24', 
+                description: 'Viljakäärme (Pantherophis guttatus)',
+                image: 'public/NormalCorn.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Sunkissed CB24', 
+                description: 'Viljakäärme (Pantherophis guttatus)',
+                image: 'public/Sunkissed.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+            { 
+                name: 'Banana CB24', 
+                description: 'Kuningaspyton (Python regius)',
+                image: '/public/Bananay24c1b3003.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
+
+        ];
+
+    // State variables
+    let currentIndex = 0;
+    let isZoomed = false;
+    let autoplayInterval;
+    let isTransitioning = false;
+
+    // Screen size check
+    function isScreenLargeEnough() {
+        return window.innerWidth >= 1024;
+    }
+
+    // Initialize carousel
+    function initializeCarousel() {
+        generateCarouselItems();
+        setupEventListeners();
+        startAutoplay();
+        updateCarouselPosition(false);
+    }
+
+    // Create carousel items
+    function generateCarouselItems() {
+        const carousel = document.getElementById('snakeCarousel');
+        
+        // Add cloned items at start for infinite scroll
+        for (let i = snakes.length - 3; i < snakes.length; i++) {
+            const card = createCarouselCard(snakes[i], true);
+            carousel.appendChild(card);
+        }
+        
+        // Add original items
+        snakes.forEach(snake => {
+            const card = createCarouselCard(snake, false);
+            carousel.appendChild(card);
+        });
+        
+        // Add cloned items at end
+        for (let i = 0; i < 3; i++) {
+            const card = createCarouselCard(snakes[i], true);
+            carousel.appendChild(card);
+        }
+    }
+
+    // Create individual carousel cards
+    function createCarouselCard(snake, isClone) {
+        const card = document.createElement('div');
+        card.classList.add(
+            'carousel-item', 
+            'snake-card', 
+            'rounded-xl', 
+            'overflow-hidden', 
+            'p-1',
+            isScreenLargeEnough() ? 'cursor-pointer' : 'cursor-default'
+        );
+        
+        if (isClone) card.setAttribute('data-clone', 'true');
+        
+        card.innerHTML = `
+            <img src="${snake.image}" alt="${snake.name}" 
+                 class="w-full h-64 object-cover rounded-t-xl">
+            <div class="p-6">
+                <h3 class="text-2xl font-bold mb-3 text-green-300">${snake.name}</h3>
+                <p class="text-gray-300 mb-4">${snake.description}</p>
+                <a href="mailto:grovesroyals@gmail.com?subject=Olen kiinnostunut käärmeestä: ${encodeURIComponent(snake.name)}"
+                   class="bg-green-600 px-4 py-2 rounded-full text-white text-sm hover:bg-green-700 transition"
+                   onclick="event.stopPropagation()">
+                    Kysy lisää!
+                </a>
+            </div>
+        `;
+        
+        if (isScreenLargeEnough()) {
+            card.addEventListener('click', () => openLightbox(snake.image, snake.name, snake.description));
+        }
+        
+        return card;
+    }
+
+    // Lightbox functionality
+    function openLightbox(imageSrc, title, description) {
+        if (!isScreenLargeEnough()) return;
+
+        const lightbox = document.createElement('div');
+        lightbox.className = 'fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center';
+        
+        const content = document.createElement('div');
+        content.className = 'max-w-4xl w-full mx-4 bg-green-900/50 rounded-lg overflow-hidden';
+        
+        content.innerHTML = `
+            <img src="${imageSrc}" alt="${title}" class="w-full h-96 object-contain">
+            <div class="p-6">
+                <h3 class="text-2xl font-bold mb-2 text-green-300">${title}</h3>
+                <p class="text-gray-300">${description}</p>
+            </div>
+        `;
+        
+        lightbox.appendChild(content);
+        document.body.appendChild(lightbox);
+        
+        stopAutoplay();
+        isZoomed = true;
+        
+        lightbox.addEventListener('click', () => {
+            document.body.removeChild(lightbox);
+            isZoomed = false;
+            startAutoplay();
+        });
+    }
+
+    // Event listeners setup
+    function setupEventListeners() {
+        const prevButton = document.querySelector('.carousel-arrow.prev');
+        const nextButton = document.querySelector('.carousel-arrow.next');
+        const container = document.querySelector('.carousel-container');
+
+        prevButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            moveCarousel('prev');
+        });
+        
+        nextButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            moveCarousel('next');
+        });
+        
+        container.addEventListener('mouseenter', stopAutoplay);
+        container.addEventListener('mouseleave', startAutoplay);
+
+        // Window resize handler
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                updateCardsInteractivity();
+                if (!isZoomed) {
+                    updateCarouselPosition(false);
+                }
+            }, 250);
+        });
+    }
+
+    // Update cards interactivity based on screen size
+    function updateCardsInteractivity() {
+        const cards = document.querySelectorAll('.carousel-item');
+        cards.forEach(card => {
+            if (isScreenLargeEnough()) {
+                card.classList.remove('cursor-default');
+                card.classList.add('cursor-pointer');
+                if (!card.onclick) {
+                    const snakeIndex = Array.from(card.parentNode.children).indexOf(card) % snakes.length;
+                    card.addEventListener('click', () => 
+                        openLightbox(snakes[snakeIndex].image, snakes[snakeIndex].name, snakes[snakeIndex].description)
+                    );
+                }
+            } else {
+                card.classList.remove('cursor-pointer');
+                card.classList.add('cursor-default');
+                card.onclick = null;
+            }
+        });
+    }
+
+    // Carousel movement
+    function moveCarousel(direction) {
+        if (isTransitioning || isZoomed) return;
+        
+        isTransitioning = true;
+        
+        if (direction === 'next') {
+            currentIndex++;
+        } else {
+            currentIndex--;
+        }
+        
+        updateCarouselPosition(true);
+        
+        setTimeout(() => {
+            if (currentIndex >= snakes.length + 3) {
+                currentIndex = 3;
+                updateCarouselPosition(false);
+            } else if (currentIndex < 3) {
+                currentIndex = snakes.length + 2;
+                updateCarouselPosition(false);
+            }
+            isTransitioning = false;
+        }, 500);
+    }
+
+    // Update carousel position
+    function updateCarouselPosition(animate = true) {
+        const carousel = document.getElementById('snakeCarousel');
+        const itemWidth = getItemWidth();
+        
+        if (!animate) carousel.classList.add('no-transition');
+        
+        carousel.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+        
+        if (!animate) {
+            setTimeout(() => carousel.classList.remove('no-transition'), 50);
+        }
+    }
+
+    // Get item width
+    function getItemWidth() {
+        const item = document.querySelector('.carousel-item');
+        const style = window.getComputedStyle(item);
+        const margin = parseInt(style.marginRight) || 0;
+        return item.offsetWidth + margin;
+    }
+
+    // Autoplay controls
+    function startAutoplay() {
+        if (!isZoomed) {
+            stopAutoplay();
+            autoplayInterval = setInterval(() => moveCarousel('next'), 3000);
+        }
+    }
+
+    function stopAutoplay() {
+        clearInterval(autoplayInterval);
+    }
+
+    // Initialize carousel when DOM is ready
+    initializeCarousel();
+});
+    function generatePhotoGallery() {  
+        // Gallery images
+        const galleryImages = [
+            {   src:'public/photoGallery/Kuningaspyton.webp',
+                species: 'Kuningaspyton (Python regius)'
+            }, 
+            {   src:'public/photoGallery/Boaimperator.jpg',
+                species: 'Väliamerikan Boa (Boa imperator)'
+            },
+            {   src:'public/photoGallery/Burmanpyton.jpg',
+                species: 'Burmanpyton (Python bivittatus)'
+            },
+            {   src:'public/photoGallery/Verkkopyton.jpg',
+                species: 'Verkkopyton (Malayopython reticulatus)'
+            },
+            {   src:'public/photoGallery/Viljakäärme.jpg',
+                species: 'Viljakäärme (Pantherophis guttatus)'
+            },
+            {   src:'public/photoGallery/Caribena.jpg',
+                species: 'Caribena Versicolor tarantula'
+            },
+            {   src:'public/photoGallery/Cromatopelma.jpg',
+                species: 'Cromatopelma cyaneopubescens tarantula'
+            },
+            {   src:'public/photoGallery/Argentiinantorakka.jpg',
+                species: 'Argentiinantorakka (Blaptica dupia)'
+            },
+            {   src:'public/photoGallery/Arizonablonde.jpg',
+                species: 'Arizona blonde tarantula'
+            },
+            {   src:'public/photoGallery/Davus.jpg',
+                species: 'Davus Pentaloris tarantula'
+            },
+            {   src:'public/photoGallery/Gigas.jpg',
+                species: 'Archispirostreptus gigas'
+            },
+            {   src:'public/photoGallery/Grap.jpg',
+                species: 'Punasaksitaskurapu (Perisesarma bidens)'
+            },
+            {   src:'public/photoGallery/Harjasgekko.jpg',
+                species: 'Harjasgekko (Rhacodactylus ciliatus)'
+            },
+            {   src:'public/photoGallery/Jättilehtitorakka.jpg',
+                species: 'Jättilehtitorakka'
+            },
+            {   src:'public/photoGallery/Meksikonpunapolvi.jpg',
+                species: 'Meksikonpunapolvi tarantula (Brachypelma hamorii)'
+            },
+            {   src:'public/photoGallery/Nhandu.jpg',
+                species: 'Nhandu chromatus tarantula'
+            },
+            {   src:'public/photoGallery/Phorpus.jpg',
+                species: 'Phormictopus SP. sierra tarantula'
+            },
+            {   src:'public/photoGallery/Sepi.jpg',
+                species: 'Sfinx (Canadian hairless)'
+            },
+            {   src:'public/photoGallery/Coming-soon.jpg',
+                species: 'Grammostola pulchra tarantula'
+            },
+            {   src:'public/photoGallery/Coming-soon.jpg',
+                species: 'Grammostola pulchripes tarantula'
+            },
+            {   src:'public/photoGallery/Coming-soon.jpg',
+                species: 'Cyriopagopus sp. "Sumatran tiger" tarantula'
+            },
+            {   src:'public/photoGallery/Coming-soon.jpg',
+                species: 'Psalmopoeus irminia tarantula'
+            },
+            {   src:'public/photoGallery/Coming-soon.jpg',
+                species: 'Homoeomma chilensis'
+            },
+            {   src:'public/photoGallery/Coming-soon.jpg',
+                species: 'Lasiocyano sazimai'
+            },
+            {   src:'public/photoGallery/Coming-soon.jpg',
+                species: 'Brachypelma emilia'
+            },
+        ];
+        
+        // Generate photo gallery
+        const gallery = document.getElementById('photoGallery');
+        if (!gallery) return;
+ 
+        
+        galleryImages.forEach(image => {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item relative overflow-hidden rounded-lg cursor-pointer';
+            
+            galleryItem.innerHTML = `
+                <img src="${image.src}" 
+                    alt="${image.species}" 
+                    class="w-full h-64 object-cover">
+                <div class="species-tag absolute top-0 left-0 right-0 bg-black bg-opacity-70 text-white py-2 px-4 -translate-y-full transition-transform duration-300">
+                    ${image.species}
+                </div>
+            `;
+            
+        // Add hover effect
+        galleryItem.addEventListener('mouseenter', () => {
+            galleryItem.querySelector('.species-tag').style.transform = 'translateY(0)';
+        });
+        
+        galleryItem.addEventListener('mouseleave', () => {
+            galleryItem.querySelector('.species-tag').style.transform = 'translateY(-100%)';
+        });
+        
+        // Add click handler for lightbox
+        galleryItem.addEventListener('click', () => {
+            openGalleryLightbox(image.src, image.species);
+        });
+        
+        gallery.appendChild(galleryItem);
+    });
+}
+    // Lightbox for gallery images
+    function openGalleryLightbox(src, title) {
+        const lightbox = document.createElement('div');
+        lightbox.className = 'fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4';
+        
+        lightbox.innerHTML = `
+            <div class="max-w-4xl w-full bg-green-900/50 rounded-lg overflow-hidden">
+                <img src="${src}" alt="${title}" class="w-full object-contain max-h-[80vh]">
+                <div class="p-4 text-center text-white text-xl">${title}</div>
+            </div>
+        `;
+        
+        // Close lightbox on click
+        lightbox.addEventListener('click', () => {
+            document.body.removeChild(lightbox);
+        });
+        
+        document.body.appendChild(lightbox);
+    }
+
+    // Initialize gallery when DOM is loaded
+    document.addEventListener('DOMContentLoaded', generatePhotoGallery);       
+    
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            generateCarousel();
+            generatePhotoGallery();
+        });
+    </script>
+</body>
+</html>
