@@ -808,175 +808,201 @@
 
         ];
 
-            let currentIndex = 3; // Start at index 3 (after clones)
-            let isZoomed = false;
-            let autoplayInterval;
-            let isTransitioning = false;
-            let touchStartX = 0;
-            let touchEndX = 0;
+        let currentIndex = 3;
+        let isZoomed = false;
+        let autoplayInterval;
+        let isTransitioning = false;
+        let touchStartX = 0;
+        let touchEndX = 0;
 
-            function isScreenLargeEnough() {
-                return window.innerWidth >= 1024;
+        // Utility functions
+        function isScreenLargeEnough() {
+            return window.innerWidth >= 1024;
+        }
+
+        function isTouchDevice() {
+            return window.innerWidth <= 1024;
+        }
+
+        function getItemWidth() {
+            const container = document.querySelector('.carousel-container');
+            if (!container) return 0;
+            
+            if (isTouchDevice()) {
+                return container.offsetWidth;
             }
+            
+            const totalGap = 32 * 2;
+            return (container.offsetWidth - totalGap) / 3;
+        }
 
-            function isTouchDevice() {
-                return window.innerWidth <= 1024;
-            }
+        function getCenterOffset() {
+            if (isTouchDevice()) return 0;
+            
+            const container = document.querySelector('.carousel-container');
+            const itemWidth = getItemWidth();
+            const totalWidth = (itemWidth * 3) + (32 * 2); // Three cards plus two gaps
+            return Math.max(0, (container.offsetWidth - totalWidth) / 2);
+        }
 
-            function getItemWidth() {
-                const container = document.querySelector('.carousel-container');
-                if (!container) return 0;
-                
-                if (isTouchDevice()) {
-                    return container.offsetWidth;
-                }
-                
-                // Calculate width for exactly three cards with gaps
-                const totalGap = 32 * 2; // 2rem between cards
-                return (container.offsetWidth - totalGap) / 3;
-            }
+        function updateCarouselPosition(animate = true) {
+            const carousel = document.getElementById('snakeCarousel');
+            if (!carousel) return;
 
-            function getCenterOffset() {
-                if (isTouchDevice()) return 0;
-                
-                const container = document.querySelector('.carousel-container');
-                const itemWidth = getItemWidth();
-                const totalWidth = (itemWidth * 3) + (32 * 2); // Three cards plus gaps
-                return Math.max(0, (container.offsetWidth - totalWidth) / 2);
-            }
-
-            function updateCarouselPosition(animate = true) {
-                const carousel = document.getElementById('snakeCarousel');
-                if (!carousel) return;
-
-                if (!animate) carousel.classList.add('no-transition');
-
-                const itemWidth = getItemWidth();
-                const offset = getCenterOffset();
-                const translation = currentIndex * (itemWidth + 32); // Add gap width
-                
-                carousel.style.transform = `translateX(calc(${offset}px - ${translation}px))`;
-
-                if (!animate) {
-                    setTimeout(() => carousel.classList.remove('no-transition'), 50);
-                }
-            }
-
-            function moveCarousel(direction) {
-                if (isTransitioning || isZoomed) return;
-                isTransitioning = true;
-
-                const totalItems = document.querySelectorAll('.carousel-item').length;
-                
-                if (direction === 'next') {
-                    currentIndex++;
-                } else {
-                    currentIndex--;
-                }
-
-                updateCarouselPosition(true);
-
-                setTimeout(() => {
-                    // Reset position when reaching cloned items
-                    if (currentIndex >= snakes.length + 3) {
-                        currentIndex = 3;
-                        updateCarouselPosition(false);
-                    } else if (currentIndex < 3) {
-                        currentIndex = snakes.length + 2;
-                        updateCarouselPosition(false);
-                    }
-                    isTransitioning = false;
-                }, 500);
-            }
-
-            function generateCarouselItems() {
-                const carousel = document.getElementById('snakeCarousel');
-                if (!carousel) return;
-
-                // Clear existing items
-                carousel.innerHTML = '';
-                
-                // Add cloned items at start
-                for (let i = snakes.length - 3; i < snakes.length; i++) {
-                    const card = createCarouselCard(snakes[i], true);
-                    carousel.appendChild(card);
-                }
-                
-                // Add original items
-                snakes.forEach(snake => {
-                    const card = createCarouselCard(snake, false);
-                    carousel.appendChild(card);
+            if (!animate) carousel.classList.add('no-transition');
+            
+            const itemWidth = getItemWidth();
+            const offset = getCenterOffset();
+            const translation = currentIndex * (itemWidth + 32);
+            
+            carousel.style.transform = `translateX(calc(${offset}px - ${translation}px))`;
+            
+            if (!animate) {
+                requestAnimationFrame(() => {
+                    carousel.classList.remove('no-transition');
                 });
-                
-                // Add cloned items at end
-                for (let i = 0; i < 3; i++) {
-                    const card = createCarouselCard(snakes[i], true);
-                    carousel.appendChild(card);
-                }
             }
 
-            function setupEventListeners() {
-                const carousel = document.querySelector('.carousel');
-                const container = document.querySelector('.carousel-container');
+            // Update active states
+            updateActiveStates();
+        }
+
+        function updateActiveStates() {
+            const cards = document.querySelectorAll('.carousel-item');
+            cards.forEach((card, index) => {
+                const isActive = index === currentIndex;
+                card.classList.toggle('active', isActive);
+            });
+        }
+
+        function snapToNearestCard() {
+            if (isTouchDevice()) return;
+
+            const itemWidth = getItemWidth() + 32; // Include gap
+            const carousel = document.getElementById('snakeCarousel');
+            const transform = carousel.style.transform;
+            const currentTranslate = parseInt(transform.match(/-?\d+/)[0]);
+            const offset = getCenterOffset();
+            
+            let nearestIndex = Math.round((currentTranslate - offset) / itemWidth);
+            nearestIndex = Math.max(3, Math.min(nearestIndex, snakes.length + 2));
+            
+            currentIndex = nearestIndex;
+            updateCarouselPosition(true);
+        }
+
+        function moveCarousel(direction) {
+            if (isTransitioning || isZoomed) return;
+            isTransitioning = true;
+
+            if (direction === 'next') {
+                currentIndex++;
+            } else {
+                currentIndex--;
+            }
+
+            updateCarouselPosition(true);
+
+            setTimeout(() => {
+                if (currentIndex >= snakes.length + 3) {
+                    currentIndex = 3;
+                    updateCarouselPosition(false);
+                } else if (currentIndex < 3) {
+                    currentIndex = snakes.length + 2;
+                    updateCarouselPosition(false);
+                }
+                snapToNearestCard();
+                isTransitioning = false;
+            }, 500);
+        }
+
+        function generateCarouselItems() {
+            const carousel = document.getElementById('snakeCarousel');
+            if (!carousel) return;
+
+            carousel.innerHTML = '';
+            
+            // Add clones at start
+            for (let i = snakes.length - 3; i < snakes.length; i++) {
+                carousel.appendChild(createCarouselCard(snakes[i], true));
+            }
+            
+            // Add original items
+            snakes.forEach(snake => {
+                carousel.appendChild(createCarouselCard(snake, false));
+            });
+            
+            // Add clones at end
+            for (let i = 0; i < 3; i++) {
+                carousel.appendChild(createCarouselCard(snakes[i], true));
+            }
+        }
+
+        function setupEventListeners() {
+            const carousel = document.querySelector('.carousel');
+            const container = document.querySelector('.carousel-container');
+
+            if (isTouchDevice()) {
+                setupTouchEvents(carousel);
+                stopAutoplay();
+            } else {
                 const prevButton = document.querySelector('.carousel-arrow.prev');
                 const nextButton = document.querySelector('.carousel-arrow.next');
-
-                if (isTouchDevice()) {
-                    setupTouchEvents(carousel);
-                } else {
-                    // Desktop controls
-                    prevButton?.addEventListener('click', () => moveCarousel('prev'));
-                    nextButton?.addEventListener('click', () => moveCarousel('next'));
-                }
-
-                // Common events
+                
+                prevButton?.addEventListener('click', () => moveCarousel('prev'));
+                nextButton?.addEventListener('click', () => moveCarousel('next'));
+                
                 container?.addEventListener('mouseenter', stopAutoplay);
                 container?.addEventListener('mouseleave', startAutoplay);
-
-                // Handle window resize
-                let resizeTimer;
-                window.addEventListener('resize', () => {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(() => {
-                        if (!isZoomed) {
-                            updateCarouselPosition(false);
-                        }
-                    }, 250);
-                });
+                startAutoplay();
             }
 
-            function setupTouchEvents(carousel) {
-                if (!carousel) return;
-
-                carousel.addEventListener('touchstart', (e) => {
-                    touchStartX = e.touches[0].clientX;
+            window.addEventListener('resize', () => {
+                if (isTouchDevice()) {
                     stopAutoplay();
-                }, { passive: true });
+                } else if (!isZoomed) {
+                    startAutoplay();
+                }
+                requestAnimationFrame(() => {
+                    updateCarouselPosition(false);
+                });
+            });
+        }
 
-                carousel.addEventListener('touchmove', (e) => {
-                    if (!isTransitioning) {
-                        touchEndX = e.touches[0].clientX;
-                        const diffX = touchStartX - touchEndX;
-                        
-                        if (Math.abs(diffX) > 5) {
-                            e.preventDefault();
-                            const offset = getCenterOffset();
-                            carousel.style.transform = `translateX(calc(${offset}px - ${currentIndex * getItemWidth() + diffX}px))`;
-                        }
-                    }
-                }, { passive: false });
+        function setupTouchEvents(carousel) {
+            if (!carousel) return;
 
-                carousel.addEventListener('touchend', () => {
+            carousel.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                stopAutoplay();
+                carousel.classList.add('no-transition');
+            }, { passive: true });
+
+            carousel.addEventListener('touchmove', (e) => {
+                if (!isTransitioning) {
+                    touchEndX = e.touches[0].clientX;
                     const diffX = touchStartX - touchEndX;
                     
-                    if (Math.abs(diffX) > 50) {
-                        moveCarousel(diffX > 0 ? 'next' : 'prev');
-                    } else {
-                        updateCarouselPosition(true);
+                    if (Math.abs(diffX) > 5) {
+                        e.preventDefault();
+                        const offset = getCenterOffset();
+                        const currentTransform = currentIndex * getItemWidth();
+                        carousel.style.transform = `translateX(calc(${offset}px - ${currentTransform + diffX}px))`;
                     }
-                    startAutoplay();
-                });
-            }
+                }
+            }, { passive: false });
+
+            carousel.addEventListener('touchend', () => {
+                carousel.classList.remove('no-transition');
+                const diffX = touchStartX - touchEndX;
+                
+                if (Math.abs(diffX) > 50) {
+                    moveCarousel(diffX > 0 ? 'next' : 'prev');
+                } else {
+                    updateCarouselPosition(true);
+                }
+            });
+        }
         // Create individual carousel cards
         function createCarouselCard(snake, isClone) {
             const card = document.createElement('div');
@@ -1048,30 +1074,31 @@
         }
         // Autoplay controls
         function startAutoplay() {
-            if (!isZoomed) {
-                stopAutoplay();
-                autoplayInterval = setInterval(() => moveCarousel('next'), 3000);
+                if (!isZoomed && isScreenLargeEnough()) {
+                    stopAutoplay();
+                    autoplayInterval = setInterval(() => moveCarousel('next'), 3000);
+                }
             }
-        }
 
-        function stopAutoplay() {
-            if (autoplayInterval) {
-                clearInterval(autoplayInterval);
-                autoplayInterval = null;
+            function stopAutoplay() {
+                if (autoplayInterval) {
+                    clearInterval(autoplayInterval);
+                    autoplayInterval = null;
+                }
             }
-        }
 
-        // Initialize
-        function initializeCarousel() {
-            generateCarouselItems();
-            setupEventListeners();
-            updateCarouselPosition(false);
-            startAutoplay();
-        }
+            function initializeCarousel() {
+                generateCarouselItems();
+                setupEventListeners();
+                updateCarouselPosition(false);
+                if (isScreenLargeEnough()) {
+                    startAutoplay();
+                }
+            }
 
-        // Initialize carousel
-        initializeCarousel();
-    });
+            // Initialize
+            initializeCarousel();
+        });
     function generatePhotoGallery() {  
         // Gallery images
         const galleryImages = [
