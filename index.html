@@ -136,24 +136,56 @@
             position: relative;
             width: 100%;
             overflow: hidden;
-            padding: 0 40px;
+            max-width: 1200px; /* Helps control exact width */
+            margin: 0 auto;
         }
 
         .carousel {
             display: flex;
-            transition: transform 0.5s ease;
-            gap: 2rem;
+            transition: transform 800ms cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1rem 0;
         }
 
         .carousel.no-transition {
             transition: none;
         }
 
-        /* Base carousel item styles */
+        /* Individual carousel items */
         .carousel-item {
-            flex: 0 0 calc((100% - 4rem) / 3);
-            min-width: calc((100% - 4rem) / 3);
+            flex: 0 0 33.333%;
+            width: 33.333%;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* Match carousel transition */
+            opacity: 0.6;
+            transform: scale(0.95);
+        }
+
+        .carousel-item.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+
+        @media (max-width: 1024px) {
+            .carousel-item {
+                flex: 0 0 100%;
+                width: 100%;
+            }
+        }
+
+        .snake-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        .snake-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(50, 205, 50, 0.5);
         }
 
         /* Base arrow styles */
@@ -163,7 +195,7 @@
             transform: translateY(-50%);
             width: 40px;
             height: 40px;
-            background: rgba(50, 205, 50, 0.2);
+            background: rgba(50, 205, 50, 0.1);
             border: 1px solid rgba(50, 205, 50, 0.3);
             border-radius: 50%;
             display: flex;
@@ -171,50 +203,47 @@
             justify-content: center;
             color: white;
             cursor: pointer;
-            transition: all 0.3s ease;
             z-index: 10;
-        }
-
-        @media (max-width: 1024px) {
-            .carousel-container {
-                padding: 0;
-            }
-            
-            .carousel-item {
-                flex: 0 0 100% !important; /* Use !important to override base styles */
-                min-width: 100% !important;
-                scroll-snap-stop: x;
-            }
-            
-            .carousel-arrow {
-                display: none !important; /* Use !important to ensure hiding */
-            }
-            .snake-card:hover {
-                transform: none !important;
-            }
+            transition: all 0.3s ease;
         }
 
         .carousel-arrow:hover {
-            background: rgba(50, 205, 50, 0.39);
+            background: rgba(168, 216, 35, 0.4);
+            transform: translateY(-50%) scale(0.9);
         }
 
         .carousel-arrow.prev { left: 0; }
         .carousel-arrow.next { right: 0; }
 
-        .snake-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-        }
+            /* Mobile responsive styles */
+            @media (max-width: 1024px) {
+                .carousel-container {
+                    padding: 0;
+                }
 
-        .snake-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            border-color: var(--accent-color);
-        }
+                .carousel-item {
+                    flex: 0 0 100%;
+                    min-width: 100%;
+                    opacity: 1;
+                    transform: scale(1);
+                }
 
-        .overlay {
+                .carousel-arrow {
+                    display: none;
+                }
+            }
+
+            /* Lightbox styles */
+            .lightbox {
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .lightbox.show {
+                opacity: 1;
+            }
+        
+            .overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -430,17 +459,18 @@
     <!-- Snake Collection Section with Carousel -->
     <section id="snakes" class="py-24">
         <div class="relative max-w-7xl mx-auto px-4">
-            <div class="carousel-container overflow-hidden">
+            <h2 class="text-4xl text-center font-bold mb-16 text-shadow-white">Poikasemme</h2>
+            <div class="carousel-container">
                 <div class="carousel" id="snakeCarousel">
                     <!-- Cards will be populated by JavaScript -->
                 </div>
+                <button class="carousel-arrow prev" aria-label="Previous slide">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-arrow next" aria-label="Next slide">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
-            <button class="carousel-arrow prev">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="carousel-arrow next">
-                <i class="fas fa-chevron-right"></i>
-            </button>
         </div>
     </section>
 
@@ -808,201 +838,251 @@
 
         ];
 
-        let currentIndex = 3;
-        let isZoomed = false;
-        let autoplayInterval;
-        let isTransitioning = false;
-        let touchStartX = 0;
-        let touchEndX = 0;
+            // State variables
+    let currentIndex = 3;
+    let isZoomed = false;
+    let autoplayInterval;
+    let isTransitioning = false;
+    let touchStartX = 0;
+    let touchEndX = 0;
 
-        // Utility functions
-        function isScreenLargeEnough() {
-            return window.innerWidth >= 1024;
+    // Utility functions
+    function isScreenLargeEnough() {
+        return window.innerWidth >= 1024;
+    }
+
+    function isTouchDevice() {
+        return window.innerWidth <= 1024;
+    }
+
+    function getItemWidth() {
+        const container = document.querySelector('.carousel-container');
+        if (!container) return 0;
+        
+        if (isTouchDevice()) {
+            return container.offsetWidth;
         }
+        
+        return container.offsetWidth / 3; // Exactly one-third of container
+    }
 
-        function isTouchDevice() {
-            return window.innerWidth <= 1024;
-        }
+    function getCenterOffset() {
+        if (isTouchDevice()) return 0;
+        
+        const container = document.querySelector('.carousel-container');
+        const itemWidth = getItemWidth();
+        const totalWidth = (itemWidth * 3) + (32 * 2); // Three cards plus two gaps
+        return Math.max(0, (container.offsetWidth - totalWidth) / 2);
+    }
 
-        function getItemWidth() {
-            const container = document.querySelector('.carousel-container');
-            if (!container) return 0;
-            
-            if (isTouchDevice()) {
-                return container.offsetWidth;
-            }
-            
-            const totalGap = 32 * 2;
-            return (container.offsetWidth - totalGap) / 3;
-        }
+    function updateActiveStates() {
+        const cards = document.querySelectorAll('.carousel-item');
+        cards.forEach((card, index) => {
+            // Calculate if this card is in the center position
+            const isCenterCard = index === currentIndex + 1;
+            card.classList.toggle('active', isCenterCard);
+        });
+    }
 
-        function getCenterOffset() {
-            if (isTouchDevice()) return 0;
-            
-            const container = document.querySelector('.carousel-container');
-            const itemWidth = getItemWidth();
-            const totalWidth = (itemWidth * 3) + (32 * 2); // Three cards plus two gaps
-            return Math.max(0, (container.offsetWidth - totalWidth) / 2);
-        }
+    function updateActiveStates() {
+        const cards = document.querySelectorAll('.carousel-item');
+        cards.forEach((card, index) => {
+            const isCenterCard = index === currentIndex;
+            card.classList.toggle('active', isCenterCard);
+        });
+    }
 
-        function updateCarouselPosition(animate = true) {
-            const carousel = document.getElementById('snakeCarousel');
-            if (!carousel) return;
+    function snapToNearestCard() {
+        if (isTouchDevice()) return;
 
-            if (!animate) carousel.classList.add('no-transition');
-            
-            const itemWidth = getItemWidth();
-            const offset = getCenterOffset();
-            const translation = currentIndex * (itemWidth + 32);
-            
-            carousel.style.transform = `translateX(calc(${offset}px - ${translation}px))`;
-            
-            if (!animate) {
-                requestAnimationFrame(() => {
-                    carousel.classList.remove('no-transition');
-                });
-            }
+        const itemWidth = getItemWidth() + 32; // Include gap
+        const carousel = document.getElementById('snakeCarousel');
+        const transform = carousel.style.transform;
+        const currentTranslate = parseInt(transform.match(/-?\d+/)[0]);
+        const offset = getCenterOffset();
+        
+        let nearestIndex = Math.round((currentTranslate - offset) / itemWidth);
+        nearestIndex = Math.max(3, Math.min(nearestIndex, snakes.length + 2));
+        
+        currentIndex = nearestIndex;
+        updateCarouselPosition(true);
+    }
 
-            // Update active states
-            updateActiveStates();
-        }
+    function moveCarousel(direction) {
+        if (isTransitioning || isZoomed) return;
+        isTransitioning = true;
 
-        function updateActiveStates() {
-            const cards = document.querySelectorAll('.carousel-item');
-            cards.forEach((card, index) => {
-                const isActive = index === currentIndex;
-                card.classList.toggle('active', isActive);
-            });
-        }
+        const carousel = document.getElementById('snakeCarousel');
+        const totalItems = snakes.length;
+        const transitionDuration = 800; // Base transition time in ms
 
-        function snapToNearestCard() {
-            if (isTouchDevice()) return;
-
-            const itemWidth = getItemWidth() + 32; // Include gap
-            const carousel = document.getElementById('snakeCarousel');
-            const transform = carousel.style.transform;
-            const currentTranslate = parseInt(transform.match(/-?\d+/)[0]);
-            const offset = getCenterOffset();
-            
-            let nearestIndex = Math.round((currentTranslate - offset) / itemWidth);
-            nearestIndex = Math.max(3, Math.min(nearestIndex, snakes.length + 2));
-            
-            currentIndex = nearestIndex;
+        if (direction === 'next') {
+            currentIndex++;
             updateCarouselPosition(true);
-        }
-
-        function moveCarousel(direction) {
-            if (isTransitioning || isZoomed) return;
-            isTransitioning = true;
-
-            if (direction === 'next') {
-                currentIndex++;
+            
+            if (currentIndex >= totalItems + 2) {
+                setTimeout(() => {
+                    carousel.style.transition = 'none';
+                    currentIndex = 2;
+                    updateCarouselPosition();
+                    
+                    // Force reflow
+                    void carousel.offsetHeight;
+                    
+                    // Restore transition and continue movement
+                    carousel.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+                    currentIndex++;
+                    updateCarouselPosition(true);
+                    
+                    setTimeout(() => {
+                        isTransitioning = false;
+                    }, transitionDuration);
+                }, transitionDuration);
             } else {
-                currentIndex--;
+                setTimeout(() => {
+                    isTransitioning = false;
+                }, transitionDuration);
             }
-
+        } else {
+            currentIndex--;
             updateCarouselPosition(true);
-
-            setTimeout(() => {
-                if (currentIndex >= snakes.length + 3) {
-                    currentIndex = 3;
-                    updateCarouselPosition(false);
-                } else if (currentIndex < 3) {
-                    currentIndex = snakes.length + 2;
-                    updateCarouselPosition(false);
-                }
-                snapToNearestCard();
-                isTransitioning = false;
-            }, 500);
-        }
-
-        function generateCarouselItems() {
-            const carousel = document.getElementById('snakeCarousel');
-            if (!carousel) return;
-
-            carousel.innerHTML = '';
             
-            // Add clones at start
-            for (let i = snakes.length - 3; i < snakes.length; i++) {
-                carousel.appendChild(createCarouselCard(snakes[i], true));
-            }
-            
-            // Add original items
-            snakes.forEach(snake => {
-                carousel.appendChild(createCarouselCard(snake, false));
-            });
-            
-            // Add clones at end
-            for (let i = 0; i < 3; i++) {
-                carousel.appendChild(createCarouselCard(snakes[i], true));
+            if (currentIndex <= 1) {
+                setTimeout(() => {
+                    carousel.style.transition = 'none';
+                    currentIndex = totalItems + 1;
+                    updateCarouselPosition();
+                    
+                    // Force reflow
+                    void carousel.offsetHeight;
+                    
+                    // Restore transition and continue movement
+                    carousel.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+                    currentIndex--;
+                    updateCarouselPosition(true);
+                    
+                    setTimeout(() => {
+                        isTransitioning = false;
+                    }, transitionDuration);
+                }, transitionDuration);
+            } else {
+                setTimeout(() => {
+                    isTransitioning = false;
+                }, transitionDuration);
             }
         }
+    }
+    function updateCarouselPosition(animate = true) {
+        const carousel = document.getElementById('snakeCarousel');
+        if (!carousel) return;
+        
+        if (!animate) {
+            carousel.classList.add('no-transition');
+        }
+        
+        const itemWidth = getItemWidth();
+        const translation = (currentIndex - 1) * itemWidth;
+        carousel.style.transform = `translateX(-${translation}px)`;
+        
+        updateActiveStates();
+        
+        if (!animate) {
+            void carousel.offsetHeight; // Force reflow
+            carousel.classList.remove('no-transition');
+        }
+    }
 
-        function setupEventListeners() {
-            const carousel = document.querySelector('.carousel');
-            const container = document.querySelector('.carousel-container');
+    function generateCarouselItems() {
+        const carousel = document.getElementById('snakeCarousel');
+        if (!carousel) return;
 
+        carousel.innerHTML = '';
+        
+        // Add last 3 items as clones at start
+        for (let i = snakes.length - 3; i < snakes.length; i++) {
+            carousel.appendChild(createCarouselCard(snakes[i], true));
+        }
+        
+        // Add all original items
+        snakes.forEach(snake => {
+            carousel.appendChild(createCarouselCard(snake, false));
+        });
+        
+        // Add first 3 items as clones at end
+        for (let i = 0; i < 3; i++) {
+            carousel.appendChild(createCarouselCard(snakes[i], true));
+        }
+
+        // Set initial position
+        currentIndex = 3;
+        updateCarouselPosition();
+    }
+
+    function setupEventListeners() {
+        const carousel = document.querySelector('.carousel');
+        const container = document.querySelector('.carousel-container');
+
+        if (isTouchDevice()) {
+            setupTouchEvents(carousel);
+            stopAutoplay();
+        } else {
+            const prevButton = document.querySelector('.carousel-arrow.prev');
+            const nextButton = document.querySelector('.carousel-arrow.next');
+            
+            prevButton?.addEventListener('click', () => moveCarousel('prev'));
+            nextButton?.addEventListener('click', () => moveCarousel('next'));
+            
+            container?.addEventListener('mouseenter', stopAutoplay);
+            container?.addEventListener('mouseleave', startAutoplay);
+            startAutoplay();
+        }
+
+        window.addEventListener('resize', () => {
             if (isTouchDevice()) {
-                setupTouchEvents(carousel);
                 stopAutoplay();
-            } else {
-                const prevButton = document.querySelector('.carousel-arrow.prev');
-                const nextButton = document.querySelector('.carousel-arrow.next');
-                
-                prevButton?.addEventListener('click', () => moveCarousel('prev'));
-                nextButton?.addEventListener('click', () => moveCarousel('next'));
-                
-                container?.addEventListener('mouseenter', stopAutoplay);
-                container?.addEventListener('mouseleave', startAutoplay);
+            } else if (!isZoomed) {
                 startAutoplay();
             }
-
-            window.addEventListener('resize', () => {
-                if (isTouchDevice()) {
-                    stopAutoplay();
-                } else if (!isZoomed) {
-                    startAutoplay();
-                }
-                requestAnimationFrame(() => {
-                    updateCarouselPosition(false);
-                });
+            requestAnimationFrame(() => {
+                updateCarouselPosition(false);
             });
-        }
+        });
+    }
 
-        function setupTouchEvents(carousel) {
-            if (!carousel) return;
+    function setupTouchEvents(carousel) {
+        if (!carousel) return;
 
-            carousel.addEventListener('touchstart', (e) => {
-                touchStartX = e.touches[0].clientX;
-                stopAutoplay();
-                carousel.classList.add('no-transition');
-            }, { passive: true });
+        carousel.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            stopAutoplay();
+            carousel.classList.add('no-transition');
+        }, { passive: true });
 
-            carousel.addEventListener('touchmove', (e) => {
-                if (!isTransitioning) {
-                    touchEndX = e.touches[0].clientX;
-                    const diffX = touchStartX - touchEndX;
-                    
-                    if (Math.abs(diffX) > 5) {
-                        e.preventDefault();
-                        const offset = getCenterOffset();
-                        const currentTransform = currentIndex * getItemWidth();
-                        carousel.style.transform = `translateX(calc(${offset}px - ${currentTransform + diffX}px))`;
-                    }
-                }
-            }, { passive: false });
-
-            carousel.addEventListener('touchend', () => {
-                carousel.classList.remove('no-transition');
+        carousel.addEventListener('touchmove', (e) => {
+            if (!isTransitioning) {
+                touchEndX = e.touches[0].clientX;
                 const diffX = touchStartX - touchEndX;
                 
-                if (Math.abs(diffX) > 50) {
-                    moveCarousel(diffX > 0 ? 'next' : 'prev');
-                } else {
-                    updateCarouselPosition(true);
+                if (Math.abs(diffX) > 5) {
+                    e.preventDefault();
+                    const offset = getCenterOffset();
+                    const currentTransform = currentIndex * getItemWidth();
+                    carousel.style.transform = `translateX(calc(${offset}px - ${currentTransform + diffX}px))`;
                 }
-            });
-        }
+            }
+        }, { passive: false });
+
+        carousel.addEventListener('touchend', () => {
+            carousel.classList.remove('no-transition');
+            const diffX = touchStartX - touchEndX;
+            
+            if (Math.abs(diffX) > 50) {
+                moveCarousel(diffX > 0 ? 'next' : 'prev');
+            } else {
+                updateCarouselPosition(true);
+            }
+        });
+    }
         // Create individual carousel cards
         function createCarouselCard(snake, isClone) {
             const card = document.createElement('div');
@@ -1073,32 +1153,32 @@
             });
         }
         // Autoplay controls
-        function startAutoplay() {
-                if (!isZoomed && isScreenLargeEnough()) {
-                    stopAutoplay();
-                    autoplayInterval = setInterval(() => moveCarousel('next'), 3000);
-                }
-            }
+    function startAutoplay() {
+        if (!isZoomed && isScreenLargeEnough()) {
+            stopAutoplay();
+            autoplayInterval = setInterval(() => moveCarousel('next'), 3000); // Give more time between transitions
+        }
+    }
 
-            function stopAutoplay() {
-                if (autoplayInterval) {
-                    clearInterval(autoplayInterval);
-                    autoplayInterval = null;
-                }
-            }
+    function stopAutoplay() {
+        if (autoplayInterval) {
+            clearInterval(autoplayInterval);
+            autoplayInterval = null;
+        }
+    }
 
-            function initializeCarousel() {
-                generateCarouselItems();
-                setupEventListeners();
-                updateCarouselPosition(false);
-                if (isScreenLargeEnough()) {
-                    startAutoplay();
-                }
-            }
+    function initializeCarousel() {
+        generateCarouselItems();
+        setupEventListeners();
+        updateCarouselPosition(false);
+        if (isScreenLargeEnough()) {
+            startAutoplay();
+        }
+    }
 
-            // Initialize
-            initializeCarousel();
-        });
+    // Initialize
+    initializeCarousel();
+});
     function generatePhotoGallery() {  
         // Gallery images
         const galleryImages = [
