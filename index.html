@@ -3,12 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Groves Royals</title>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <meta name="description" content="Groves Royals on suomalainen käärmeiden kasvattaja, joka kasvattaa laadukkaita kotimaisia matelijalemmikkejä.">
+
+    <script>
+        window.onload = function() {
+            if(!window.location.hash) {
+                window.location = window.location + '?v=' + Date.now();
+            }
+        }
+    </script>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fleur+De+Leah&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="./video/favicon.ico">
+
     
     <style>
         /* Root variables */
@@ -337,6 +356,17 @@
         }
 
     </style>
+
+<script>
+    // Pakota päivitys F5 tai ctrl+F5 painalluksella
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F5' || (e.ctrlKey && e.key === 'F5')) {
+            e.preventDefault();
+            window.location.reload(true);
+        }
+    });
+</script>
+
 </head>
 <body>
     <!-- Navigation -->
@@ -641,6 +671,7 @@
                 <h3 class="text-xl font-bold mb-4 text-yellow-300">Terveys</h3>
                 <ul class="space-y-3 text-gray-200">
                     <li>• Käärme luovutetaan aina vain terveänä.</li>
+                    <li>• Aina laadukkaita kotimaisia poikasia.</li>
                     <li>• Ilmoita kasvattajalle aina kahden päivän sisällä luovutuksesta, jos huomaat puutteen tai ongelman käärmeessä.</li>
                     <li>• Poikanen on aina ruokittu viikon sisään luovutuksesta ja nahanluonti on ollut ongelmatonta.</li>
                     <li>• Käärmeellä on aina tarvittavat määräysten vaatimat paperit mukana.</li>
@@ -674,6 +705,12 @@
     </footer>
 
     <script>
+
+        window.onload = function() {
+            if(!window.location.hash) {
+                window.location = window.location + '?v=' + Date.now();
+            }
+        }
     
         document.addEventListener('DOMContentLoaded', function() {
         const observerOptions = {
