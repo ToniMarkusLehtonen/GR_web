@@ -9,6 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fleur+De+Leah&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="./video/favicon.ico">
+    <script>
+        window.location.href =
+        "index.html?v=" + new
+        Date().getTime();
+    </script>
+    
+    
     <style>
         /* Root variables */
         :root {
@@ -32,7 +39,7 @@
         .brand-title {
             font-family: 'Fleur De Leah', 'regular'; 
             letter-spacing: 2px;
-            font-size: 3rem; /* Adjusted size */
+            font-size: 3rem;
             text-shadow: 0 0 50px rgba(4, 10, 4, 0.747);
         }
 
@@ -65,10 +72,11 @@
             min-height: 100%;
             width: auto;
             height: auto;
+            object-fit: cover;
             z-index: 0;
-            mix-blend-mode: screen;
+            mix-blend-mode: plus-lighter;
             filter: hue-rotate(250deg) contrast(1.6) brightness(1.4);
-            opacity: 0.9;
+            opacity: 0.6;
             transition: opacity 1s ease;
         }
 
@@ -87,21 +95,6 @@
             background: transparent;
         }
 
-        .video-background {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: cover;
-            z-index: 0;
-            mix-blend-mode: plus-lighter;
-            opacity: 0.6;
-            transition: opacity 1s ease;
-        }
 
         .video-overlay {
             position: absolute;
@@ -396,12 +389,13 @@
                         transition-all duration-300 ease-out animated-on-scroll">
                         Myyntiehdot
                     </a>
-                    <a href="#gallery" 
+                    <a href="#about" 
                         class="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-white 
-                        hover:bg-green-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/20 
-                        hover:border-green-400 hover:text-shadow-white hover:scale-105
-                        transition-all duration-300 ease-out animated-on-scroll">
-                        Lajimme
+                            hover:bg-green-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/20 
+                            hover:border-green-400 hover:text-shadow-white hover:scale-105
+                            transition-all duration-300 ease-out animated-on-scroll">
+                        Meistä
+                    </a>
                     </a>
                     <!-- Add other desktop navigation buttons here -->
                 </div>
@@ -686,6 +680,7 @@
     </footer>
 
     <script>
+        
     document.addEventListener('DOMContentLoaded', function() {
         const observerOptions = {
             root: null,
@@ -760,7 +755,7 @@
             { 
                 name: 'Blackhead CB23', 
                 description: 'Kuningaspyton (Python regius)',
-                image: './images/Comingsoon.jpg',
+                image: './images/blackheady23f3P.jpg',
                 email: 'grovesroyals@gmail.com'
             },
             { 
@@ -772,7 +767,7 @@
             { 
                 name: 'Blackhead CB23',
                 description: 'Kuningaspyton (Python regius)',
-                image: './images/Comingsoon.jpg',
+                image: './images/blackheady23f4L.jpg',
                 email: 'grovesroyals@gmail.com'
             },
             { 
@@ -1049,42 +1044,8 @@
         });
     }
 
-    function setupTouchEvents(carousel) {
-        if (!carousel) return;
-
-        carousel.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            stopAutoplay();
-            carousel.classList.add('no-transition');
-        }, { passive: true });
-
-        carousel.addEventListener('touchmove', (e) => {
-            if (!isTransitioning) {
-                touchEndX = e.touches[0].clientX;
-                const diffX = touchStartX - touchEndX;
-                
-                if (Math.abs(diffX) > 5) {
-                    e.preventDefault();
-                    const offset = getCenterOffset();
-                    const currentTransform = currentIndex * getItemWidth();
-                    carousel.style.transform = `translateX(calc(${offset}px - ${currentTransform + diffX}px))`;
-                }
-            }
-        }, { passive: false });
-
-        carousel.addEventListener('touchend', () => {
-            carousel.classList.remove('no-transition');
-            const diffX = touchStartX - touchEndX;
-            
-            if (Math.abs(diffX) > 50) {
-                moveCarousel(diffX > 0 ? 'next' : 'prev');
-            } else {
-                updateCarouselPosition(true);
-            }
-        });
-    }
-        // Create individual carousel cards
-        function createCarouselCard(snake, isClone) {
+    // Create individual carousel cards
+    function createCarouselCard(snake, isClone) {
             const card = document.createElement('div');
             card.classList.add(
                 'carousel-item', 
@@ -1165,6 +1126,43 @@
             clearInterval(autoplayInterval);
             autoplayInterval = null;
         }
+    }
+
+    function setupTouchEvents(carousel) {
+        if (!carousel) return;
+
+        carousel.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            stopAutoplay();
+            carousel.classList.add('no-transition');
+        }, { passive: true });
+
+        carousel.addEventListener('touchmove', (e) => {
+            if (!isTransitioning) {
+                touchEndX = e.touches[0].clientX;
+                const diffX = touchStartX - touchEndX;
+                
+                if (Math.abs(diffX) > 5) {
+                    e.preventDefault();
+                    const offset = getCenterOffset();
+                    const currentTransform = currentIndex * getItemWidth();
+                    carousel.style.transform = `translateX(calc(${offset}px - ${currentTransform + diffX}px))`;
+                }
+            }
+        }, { passive: false });
+
+        function handleTouchEnd() {
+            carousel.classList.remove('no-transition');
+            const diffX = touchStartX - touchEndX;
+            
+            if (Math.abs(diffX) > 50) {
+                moveCarousel(diffX > 0 ? 'next' : 'prev');
+            } else {
+                updateCarouselPosition(true);
+            }
+        }
+
+        carousel.addEventListener('touchend', handleTouchEnd);
     }
 
     function initializeCarousel() {
@@ -1333,7 +1331,6 @@
     
         // Initialize everything
         document.addEventListener('DOMContentLoaded', () => {
-            generateCarousel();
             generatePhotoGallery();
         });
     </script>
