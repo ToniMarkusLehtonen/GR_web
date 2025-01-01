@@ -61,11 +61,6 @@
             transform: translateY(0);
         }
 
-        @media (max-width: 768px) {
-            .mobile-menu {
-                display: block;
-            }
-        }
         .video-background {
             position: absolute;
             top: 50%;
@@ -159,14 +154,7 @@
             opacity: 1;
             transform: scale(1);
         }
-        
 
-        @media (max-width: 1024px) {
-            .carousel-item {
-                flex: 0 0 100%;
-                width: 100%;
-            }
-        }
 
         .snake-card {
             background: rgba(255, 255, 255, 0.1);
@@ -221,7 +209,7 @@
                     flex: 0 0 100%;
                     min-width: 100%;
                     opacity: 1;
-                    transform: scale(1);
+                    transform: scale(1.0);
                 }
 
                 .carousel-arrow {
@@ -1069,12 +1057,12 @@
             
             card.innerHTML = `
                 <img src="${snake.image}" alt="${snake.name}" 
-                    class="w-full h-64 object-cover rounded-t-xl">
+                    class="w-full h-64 object-contain rounded-t-xl">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-3 text-green-300">${snake.name}</h3>
                     <p class="text-gray-300 mb-4">${snake.description}</p>
                     <a href="mailto:grovesroyals@gmail.com?subject=Olen kiinnostunut käärmeestä: ${encodeURIComponent(snake.name)}"
-                    class="bg-green-600 px-4 py-2 rounded-full text-white text-sm hover:bg-green-700 transition"
+                    class="inline-block bg-green-600 px-4 py-2 rounded-full text-white text-sm hover:bg-green-700 transition"
                     onclick="event.stopPropagation()">
                         Kysy lisää!
                     </a>
@@ -1337,11 +1325,8 @@
                 }
             });
         });
-    
-        // Initialize everything
-        document.addEventListener('DOMContentLoaded', () => {
-            generatePhotoGallery();
-        });
+        // Initialize gallery
+        initializePhotoGallery();
     </script>
 </body>
 </html>
