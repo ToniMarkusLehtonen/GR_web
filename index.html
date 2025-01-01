@@ -9,7 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fleur+De+Leah&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="./video/favicon.ico">
-    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <style>
         /* Root variables */
@@ -675,25 +677,8 @@
     </footer>
 
     <script>
-
-    // Cache control for assets
-    const cacheControl = () => {
-        const assets = document.querySelectorAll('link[rel="stylesheet"], script[src]');
-        assets.forEach(asset => {
-            const url = new URL(asset.href || asset.src);
-            url.searchParams.set('v', Date.now());
-            if (asset.href) {
-                asset.href = url.toString();
-            } else {
-                asset.src = url.toString();
-            }
-        });
-    };
-
-    document.addEventListener('DOMContentLoaded', cacheControl);
     
-        
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
         const observerOptions = {
             root: null,
             rootMargin: '-50px',
