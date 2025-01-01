@@ -1126,6 +1126,15 @@
     }
 
     function setupTouchEvents(carousel) {
+        // Add error handling
+        if (!carousel) {
+            console.warn('Carousel element not found');
+            return;
+        }
+        
+        // Add touch state tracking
+        let isSwiping = false;
+        
         if (!carousel) return;
 
         carousel.addEventListener('touchstart', (e) => {
@@ -1152,7 +1161,7 @@
             carousel.classList.remove('no-transition');
             const diffX = touchStartX - touchEndX;
             
-            if (Math.abs(diffX) > 50) {
+            if (Math.abs(diffX) > 30) {
                 moveCarousel(diffX > 0 ? 'next' : 'prev');
             } else {
                 updateCarouselPosition(true);
@@ -1325,8 +1334,6 @@
                 }
             });
         });
-        // Initialize gallery
-        initializePhotoGallery();
     </script>
 </body>
 </html>
