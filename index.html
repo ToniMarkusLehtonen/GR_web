@@ -60,6 +60,7 @@
         .mobile-menu.active {
             transform: translateY(0);
         }
+        
 
         .video-background {
             position: absolute;
@@ -73,9 +74,12 @@
             object-fit: cover;
             z-index: 0;
             mix-blend-mode: plus-lighter;
-            filter: hue-rotate(250deg) contrast(1.6) brightness(1.4);
+            filter: hue-rotate(250deg) contrast(1.4) brightness(2.4);
             opacity: 0.6;
             transition: opacity 1s ease;
+            mask-image: linear-gradient(to bottom black 90%, transparent 100%);
+                -webkit-mask-image:
+                linear-gradient(to bottom, black 90%, transparent 100%);
         }
 
         /* Hero section */
@@ -93,7 +97,6 @@
             background: transparent;
         }
 
-
         .video-overlay {
             position: absolute;
             top: 0;
@@ -101,9 +104,9 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(
-                circle at center,
-                rgba(26, 77, 26, 0.1) 0%,
-                rgba(10, 46, 10, 0.3) 100%
+            circle at center,
+            rgba(26, 77, 26, 0.1) 0%,
+            rgba(10, 46, 10, 0.3) 100%
             );
             z-index: 1;
         }
@@ -120,6 +123,55 @@
             mix-blend-mode: screen;
             color: white;
             padding: 0 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .video-background {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the video */
+            object-fit: cover;
+            filter: hue-rotate(250deg) contrast(1.4) brightness(2.4);
+            mask-image: linear-gradient(to bottom black 90%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+            z-index: -1; /* Place video behind other elements */
+            }
+
+            .video-hero {
+            height: 60vh;
+            position: relative; /* Create stacking context */
+            margin-top: 80px; /* Add margin to prevent overlap with navbar */
+            image-rendering:auto
+            }
+
+            .video-overlay {
+            background: linear-gradient(
+                circle at center,
+                rgba(26, 77, 26, 0.2) 0%,
+                rgba(10, 46, 10, 0.4) 100%
+            );
+            z-index: 1; /* Ensure overlay is above video */
+            }
+
+            .hero-content {
+            padding: 0 10px;
+            z-index: 2; /* Ensure content is above overlay */
+            }
+        }
+
+        @media (orientation: landscape) and (max-width: 1024px) {
+            .video-hero {
+            height: 100vh; /* Full height in landscape */
+            margin-top: 0; /* Remove margin in landscape */
+            }
+
+            .video-background {
+            width: 100vw; /* Full viewport width */
+            height: 100vh; /* Full viewport height */
+            }
         }
 
         /* Carousel styles */
