@@ -1,0 +1,6 @@
+            { 
+                name: 'Blackhead CB23', 
+                description: 'Kuningaspyton (Python regius)',
+                image: './images/blackhead1P.jpg',
+                email: 'grovesroyals@gmail.com'
+            },
